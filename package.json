@@ -1,0 +1,60 @@
+{
+  "name": "@robinblomberg/bson2",
+  "version": "0.0.1",
+  "author": "Robin Blomberg",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RobinBlomberg/bson2.git"
+  },
+  "bugs": {
+    "url": "https://github.com/RobinBlomberg/bson2/issues"
+  },
+  "homepage": "https://github.com/RobinBlomberg/bson2#readme",
+  "scripts": {
+    "build": "rimraf dist && tsc",
+    "check": "tsc --noEmit",
+    "ci": "run-s ci:*",
+    "ci:build": "pnpm build",
+    "ci:eslint": "pnpm lint:eslint --max-warnings=0",
+    "ci:prettier": "pnpm lint:prettier",
+    "ci:test": "pnpm test",
+    "dev": "tsx watch ./src/index.ts",
+    "fix": "run-s fix:*",
+    "fix:eslint": "eslint --fix src",
+    "fix:prettier": "prettier --write src",
+    "lint": "run-p lint:*",
+    "lint:eslint": "eslint src --report-unused-disable-directives",
+    "lint:prettier": "prettier --check src",
+    "prepublishOnly": "pnpm run ci",
+    "test": "vitest --passWithNoTests --run src",
+    "test:watch": "vitest --passWithNoTests src"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@robinblomberg/eslint-config-prettier": "^0.1.4",
+    "@robinblomberg/eslint-config-robinblomberg": "^0.25.0",
+    "@robinblomberg/prettier-config": "^0.2.0-beta1",
+    "@types/node": "^20.11.17",
+    "eslint": "^8.56.0",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^3.2.5",
+    "rimraf": "^5.0.5",
+    "tsx": "^4.7.1",
+    "typescript": "^5.3.3",
+    "vitest": "^1.2.2"
+  },
+  "eslintConfig": {
+    "extends": [
+      "@robinblomberg/robinblomberg",
+      "@robinblomberg/prettier"
+    ],
+    "rules": {
+      "unicorn/no-new-array": 0
+    }
+  },
+  "prettier": "@robinblomberg/prettier-config"
+}
