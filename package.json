@@ -33,7 +33,6 @@
     "test": "vitest --passWithNoTests --run src",
     "test:watch": "vitest --passWithNoTests src"
   },
-  "dependencies": {},
   "devDependencies": {
     "@robinblomberg/eslint-config-prettier": "^0.1.4",
     "@robinblomberg/eslint-config-robinblomberg": "^0.25.0",
