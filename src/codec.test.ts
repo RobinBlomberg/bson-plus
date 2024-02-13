@@ -1,17 +1,15 @@
 import { describe, expect, test } from 'vitest';
-import type { DataTypeValueMap } from './codec.js';
-import { Codec, DataType } from './codec.js';
+import { DataType, read, write, type DataTypeValueMap } from './codec.js';
 
 const BUFFER = new ArrayBuffer(32);
+const VIEW = new DataView(BUFFER);
 
 const assert = <Type extends DataType>(
   type: Type,
   input: DataTypeValueMap[Type],
 ) => {
-  const codec = new Codec(BUFFER);
-  codec.write(type, input);
-  codec.reset();
-  const output = codec.read(type);
+  write(VIEW, 0, type, input);
+  const output = read(VIEW, 0, type);
   expect(input).toBe(output);
 };
 
@@ -97,9 +95,7 @@ describe('DataInterface', () => {
     });
 
     test('out of range', () => {
-      expect(() =>
-        new Codec(BUFFER).write(DataType.VLQ, 2_147_483_648),
-      ).toThrow();
+      expect(() => write(VIEW, 0, DataType.VLQ, 2_147_483_648)).toThrow();
     });
   });
 });
