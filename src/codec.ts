@@ -5,7 +5,6 @@ export const enum DataType {
   Int16,
   Int32,
   Int64,
-  SignedVLQ,
   Uint8,
   Uint16,
   Uint32,
@@ -20,7 +19,6 @@ export type DataTypeValueMap = {
   [DataType.Int16]: number;
   [DataType.Int32]: number;
   [DataType.Int64]: bigint;
-  [DataType.SignedVLQ]: number;
   [DataType.Uint8]: number;
   [DataType.Uint16]: number;
   [DataType.Uint32]: number;
@@ -64,9 +62,6 @@ export const read = <Type extends DataType>(
       offset += 8;
       return value;
     }
-    case DataType.SignedVLQ: {
-      throw new Error('Not implemented');
-    }
     case DataType.Uint8: {
       const value = view.getUint8(offset);
       offset += 1;
@@ -97,6 +92,8 @@ export const read = <Type extends DataType>(
       } while (byte & 128);
       return value;
     }
+    default:
+      throw new Error('Invalid type');
   }
 };
 
@@ -132,9 +129,6 @@ export const write = <Type extends DataType>(
       view.setBigInt64(offset, v);
       offset += 8;
       return offset;
-    case DataType.SignedVLQ: {
-      throw new Error('Not implemented');
-    }
     case DataType.Uint8:
       view.setUint8(offset, v);
       offset += 1;
@@ -156,7 +150,7 @@ export const write = <Type extends DataType>(
         throw new RangeError(`Value is out of range for VLQ: ${v}`);
       }
       // prettier-ignore
-      let shift = v >= 268_435_456 ? 28 : v >= 2_097_152 ? 21 : v >= 16_384 ? 14 : v >= 128 ? 7 : 0;
+      let shift = v < 128 ? 0 : v < 16_384 ? 7 : v < 2_097_152 ? 14 : v < 268_435_456 ? 21 : 28
       while (shift > 0) {
         view.setUint8(offset, (v >> shift) | 128);
         offset += 1;
@@ -166,5 +160,7 @@ export const write = <Type extends DataType>(
       offset += 1;
       return offset;
     }
+    default:
+      throw new Error('Invalid type');
   }
 };
