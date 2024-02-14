@@ -52,7 +52,8 @@
       "@robinblomberg/prettier"
     ],
     "rules": {
-      "unicorn/no-new-array": 0
+      "unicorn/no-new-array": 0,
+      "unicorn/prefer-math-trunc": 0
     }
   },
   "prettier": "@robinblomberg/prettier-config"
