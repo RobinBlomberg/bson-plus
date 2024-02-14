@@ -13,8 +13,13 @@ export const enum SchemaType {
   Number,
   Object,
   String,
-  Union,
 }
+
+export type ArraySchema<Element extends Schema = Schema> = {
+  type: SchemaType.Array;
+  length?: number;
+  elements?: Element;
+};
 
 export type BooleanSchema = {
   type: SchemaType.Boolean;
@@ -25,16 +30,22 @@ export type EnumSchema<Value = unknown> = {
   values: Value[];
 };
 
-export type Schema = BooleanSchema | EnumSchema | StringSchema;
+export type Schema =
+  | { type: SchemaType.Array; length?: number; elements?: Schema }
+  | BooleanSchema
+  | EnumSchema
+  | StringSchema;
 
 export type SchemaTypeValue<ThisSchema extends Schema> =
-  ThisSchema extends BooleanSchema
-    ? boolean
-    : ThisSchema extends EnumSchema<infer Values>
-      ? Values | null
-      : ThisSchema extends StringSchema
-        ? string
-        : never;
+  ThisSchema extends ArraySchema<infer Element>
+    ? SchemaTypeValue<Element>[]
+    : ThisSchema extends BooleanSchema
+      ? boolean
+      : ThisSchema extends EnumSchema<infer Values>
+        ? Values | null
+        : ThisSchema extends StringSchema
+          ? string
+          : never;
 
 export type StringSchema = {
   type: SchemaType.String;
@@ -43,58 +54,93 @@ export type StringSchema = {
 
 export const read = <ThisSchema extends Schema>(
   iterator: Iterator,
-  schema: ThisSchema,
-) => {
+  schema?: ThisSchema,
+): SchemaTypeValue<ThisSchema> => {
+  if (schema === undefined) {
+    schema = { type: readPrimitive(iterator, PrimitiveType.VLQ) } as ThisSchema;
+  }
   switch (schema.type) {
-    case SchemaType.Boolean:
-      return readPrimitive(iterator, PrimitiveType.Uint8) === 1;
+    case SchemaType.Array: {
+      const length =
+        schema.length ?? readPrimitive(iterator, PrimitiveType.VLQ);
+      const value = [];
+      for (let i = 0; i < length; i++) {
+        value.push(read(iterator, schema.elements));
+      }
+      return value as SchemaTypeValue<ThisSchema>;
+    }
+    case SchemaType.Boolean: {
+      const value = readPrimitive(iterator, PrimitiveType.Uint8) === 1;
+      return value as SchemaTypeValue<ThisSchema>;
+    }
     case SchemaType.Enum: {
       const index = readPrimitive(iterator, PrimitiveType.VLQ);
-      return schema.values[index] ?? (null as SchemaTypeValue<ThisSchema>);
+      const value = schema.values[index] ?? null;
+      return value as SchemaTypeValue<ThisSchema>;
     }
     case SchemaType.String: {
       const length =
         schema.length ?? readPrimitive(iterator, PrimitiveType.VLQ);
-      let output = '';
+      let value = '';
       for (let i = 0; i < length; i++) {
-        output += String.fromCodePoint(
+        value += String.fromCodePoint(
           readPrimitive(iterator, PrimitiveType.VLQ),
         );
       }
-      return output as SchemaTypeValue<ThisSchema>;
+      return value as SchemaTypeValue<ThisSchema>;
     }
   }
 };
 
 export const write = <ThisSchema extends Schema>(
   iterator: Iterator,
-  schema: ThisSchema,
+  schema: ThisSchema | undefined,
   value: SchemaTypeValue<ThisSchema>,
-) => {
+): number => {
+  if (schema === undefined) {
+    let type: SchemaType;
+    switch (typeof value) {
+      case 'boolean':
+        type = SchemaType.Boolean;
+        break;
+      case 'string':
+        type = SchemaType.String;
+        break;
+      default:
+        if (Array.isArray(value)) {
+          type = SchemaType.Array;
+        }
+        throw new TypeError(`Failed to infer schema from value: ${value}`);
+    }
+    w(iterator, PrimitiveType.Uint8, type);
+    schema = { type } as ThisSchema;
+  }
+  const v = value as any;
   switch (schema.type) {
-    case SchemaType.Boolean:
-      return w(iterator, PrimitiveType.Uint8, value ? 1 : 0);
-    case SchemaType.Enum: {
-      let index = schema.values.indexOf(value);
-      if (index === -1) {
-        index = schema.values.length;
+    case SchemaType.Array:
+      if (schema.length === undefined) {
+        w(iterator, PrimitiveType.VLQ, v.length);
       }
-      return w(iterator, PrimitiveType.VLQ, index);
+      for (const element of v) {
+        write(iterator, schema.elements, element);
+      }
+      return iterator.offset;
+    case SchemaType.Boolean:
+      return w(iterator, PrimitiveType.Uint8, v ? 1 : 0);
+    case SchemaType.Enum: {
+      const index = schema.values.indexOf(v);
+      return w(
+        iterator,
+        PrimitiveType.VLQ,
+        index === -1 ? schema.values.length : index,
+      );
     }
     case SchemaType.String:
       if (schema.length === undefined) {
-        iterator.offset = w(
-          iterator,
-          PrimitiveType.VLQ,
-          (value as string).length,
-        );
+        w(iterator, PrimitiveType.VLQ, v.length);
       }
-      for (const character of value as string) {
-        iterator.offset = w(
-          iterator,
-          PrimitiveType.VLQ,
-          character.codePointAt(0)!,
-        );
+      for (const character of v) {
+        w(iterator, PrimitiveType.VLQ, character.codePointAt(0));
       }
       return iterator.offset;
   }

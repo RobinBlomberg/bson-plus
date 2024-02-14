@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { schemaFactory as $ } from './factory.js';
+import { schemaFactory as $ } from './schema-factory.js';
 import type { Schema, SchemaTypeValue } from './schemas.js';
 import { read, write } from './schemas.js';
 
@@ -13,8 +13,17 @@ const assert = <ThisSchema extends Schema>(
 ) => {
   write({ offset: 0, view: VIEW }, schema, input);
   const output = read({ offset: 0, view: VIEW }, schema);
-  expect(output).toBe(expectedOutput);
+  expect(output).toEqual(expectedOutput);
 };
+
+test('Array', () => {
+  assert($.array(), [false, true]);
+  assert($.array({ elements: $.boolean() }), [false, true]);
+  assert($.array({ elements: $.boolean() }), [false, true]);
+  assert($.array({ length: 2 }), [false, true]);
+  assert($.array({ length: 1 }), [false, true], [false]);
+  assert($.array({ elements: $.boolean(), length: 1 }), [false, true], [false]);
+});
 
 test('Boolean', () => {
   assert($.boolean(), false);

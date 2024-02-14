@@ -1,7 +1,22 @@
-import type { BooleanSchema, EnumSchema, StringSchema } from './schemas.js';
+import type {
+  ArraySchema,
+  BooleanSchema,
+  EnumSchema,
+  Schema,
+  StringSchema,
+} from './schemas.js';
 import { SchemaType } from './schemas.js';
 
 export const schemaFactory = {
+  array: <Elements extends Schema>(
+    options: { elements?: Elements; length?: number } = {},
+  ): ArraySchema<Elements> => {
+    return {
+      type: SchemaType.Array,
+      length: options.length,
+      elements: options.elements,
+    };
+  },
   boolean: (): BooleanSchema => {
     return {
       type: SchemaType.Boolean,
