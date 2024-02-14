@@ -1,5 +1,9 @@
 import { DataType } from './enums.js';
-import type { DataValueOfType, DataValuesOfTypes } from './types.js';
+import type {
+  DataValue,
+  DataValuesOfTypes,
+  DataValuesOfTypesInput,
+} from './types.js';
 
 export const createCodec = (dataView: DataView) => {
   let offset = 0;
@@ -68,7 +72,7 @@ export const createCodec = (dataView: DataView) => {
           throw new RangeError(`Unknown type: ${type}`);
       }
     },
-    readMany: <const Types extends DataType[]>(types: Types) => {
+    readMany: <const Types extends readonly DataType[]>(types: Types) => {
       const values = [] as DataValuesOfTypes<Types>;
       for (const type of types) {
         values.push(codec.read(type) as never);
@@ -78,10 +82,7 @@ export const createCodec = (dataView: DataView) => {
     reset: () => {
       offset = 0;
     },
-    write: <Type extends DataType>(
-      type: Type,
-      value: DataValueOfType<Type>,
-    ) => {
+    write: <Type extends DataType>(type: Type, value: DataValue<Type>) => {
       switch (type) {
         case DataType.FLOAT32:
           dataView.setFloat32(offset, value as number, true);
@@ -137,9 +138,9 @@ export const createCodec = (dataView: DataView) => {
           throw new RangeError(`Unknown type: ${type}`);
       }
     },
-    writeMany: <const Types extends DataType[]>(
+    writeMany: <const Types extends DataType[] | readonly DataType[]>(
       types: Types,
-      values: DataValuesOfTypes<Types>,
+      values: DataValuesOfTypesInput<Types>,
     ) => {
       for (let i = 0; i < types.length; i++) {
         codec.write(types[i]!, values[i]!);

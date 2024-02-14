@@ -2,14 +2,14 @@ import { deepStrictEqual, strictEqual, throws } from 'assert';
 import { describe, test } from 'vitest';
 import { createCodec } from './codec.js';
 import { DataType } from './enums.js';
-import type { DataValueOfType } from './types.js';
+import type { DataValue } from './types.js';
 
 const dataView = new DataView(new ArrayBuffer(10_000));
 const codec = createCodec(dataView);
 
 const testRoundTrip = <Type extends DataType>(
   type: Type,
-  input: DataValueOfType<Type>,
+  input: DataValue<Type>,
 ) => {
   codec.reset();
   codec.write(type, input);
@@ -103,15 +103,16 @@ describe('codec', () => {
   });
 
   test('writeMany/readMany', () => {
+    const types = [
+      DataType.UINT8,
+      DataType.LEB128,
+      DataType.LEB128,
+      DataType.LEB128,
+    ] as const;
+    const values = [3, 97, 98, 99] as const;
     codec.reset();
-    codec.writeMany(
-      [DataType.UINT8, DataType.LEB128, DataType.LEB128, DataType.LEB128],
-      [3, 97, 98, 99],
-    );
+    codec.writeMany(types, values);
     codec.reset();
-    deepStrictEqual(
-      codec.readMany([7, DataType.LEB128, DataType.LEB128, DataType.LEB128]),
-      [3, 97, 98, 99],
-    );
+    deepStrictEqual(codec.readMany(types), values);
   });
 });

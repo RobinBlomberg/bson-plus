@@ -2,13 +2,23 @@ import type { DataType } from './enums.js';
 
 export type BigIntDataType = DataType.INT64 | DataType.UINT64;
 
-export type DataValueOfType<Type extends DataType> = Type extends BigIntDataType
-  ? bigint
-  : number;
+export type DataValue<Type extends DataType = DataType> =
+  Type extends BigIntDataType ? bigint : number;
 
-export type DataValuesOfTypes<Types extends DataType[]> = Types extends [
-  infer First extends DataType,
-  ...infer Rest extends DataType[],
-]
-  ? [DataValueOfType<First>, ...DataValuesOfTypes<Rest>]
-  : [];
+export type DataValuesOfTypes<Types extends readonly DataType[]> =
+  Types extends readonly [
+    infer First extends DataType,
+    ...infer Rest extends DataType[],
+  ]
+    ? [DataValue<First>, ...DataValuesOfTypes<Rest>]
+    : DataType[] extends Types
+      ? DataValue[]
+      : [];
+
+export type DataValuesOfTypesInput<Types extends readonly DataType[]> =
+  Types extends readonly [
+    infer First extends DataType,
+    ...infer Rest extends DataType[],
+  ]
+    ? readonly [DataValue<First>, ...DataValuesOfTypes<Rest>]
+    : DataValuesOfTypes<Types>;
