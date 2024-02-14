@@ -1,4 +1,4 @@
-declare const enum Type {
+export const enum DataType {
   FLOAT32,
   FLOAT64,
   INT8,

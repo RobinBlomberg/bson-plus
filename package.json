@@ -52,6 +52,7 @@
       "@robinblomberg/prettier"
     ],
     "rules": {
+      "unicorn/no-for-loop": 0,
       "unicorn/no-new-array": 0,
       "unicorn/prefer-math-trunc": 0
     }
