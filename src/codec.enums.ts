@@ -5,7 +5,7 @@ export const enum DataType {
   INT16,
   INT32,
   INT64,
-  LEB128,
+  ULEB128,
   UINT8,
   UINT16,
   UINT32,
