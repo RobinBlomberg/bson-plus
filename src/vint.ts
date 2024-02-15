@@ -1,3 +1,21 @@
+export const readBigVsint = (dataView: DataView, offset: number) => {
+  let byte = dataView.getUint8(offset++);
+  let value = BigInt(byte & 63);
+  const sign = byte & 64;
+
+  if (byte & 128) {
+    let shift = 6n;
+    while (true) {
+      byte = dataView.getUint8(offset++);
+      value |= BigInt(byte & 127) << shift;
+      if ((byte & 128) === 0) break;
+      shift += 7n;
+    }
+  }
+
+  return sign === 0 ? value : -value;
+};
+
 export const readBigVuint = (dataView: DataView, offset: number) => {
   let value = 0n;
   let shift = 0n;
@@ -14,6 +32,7 @@ export const readSmallVsint = (dataView: DataView, offset: number) => {
   let byte = dataView.getUint8(offset++);
   let value = byte & 63;
   const sign = byte & 64;
+
   if (byte & 128) {
     let shift = 6;
     while (true) {
@@ -23,6 +42,7 @@ export const readSmallVsint = (dataView: DataView, offset: number) => {
       shift += 7;
     }
   }
+
   return sign === 0 ? value : -value;
 };
 
@@ -112,12 +132,22 @@ export const writeSmallVuint = (
   return offset;
 };
 
+export const writeVsint = (
+  dataView: DataView,
+  offset: number,
+  value: bigint | number,
+) => {
+  return value >= 0x80_00_00_00 || value < -0x80_00_00_00
+    ? writeBigVsint(dataView, offset, BigInt(value))
+    : writeSmallVsint(dataView, offset, Number(value));
+};
+
 export const writeVuint = (
   dataView: DataView,
   offset: number,
   value: bigint | number,
 ) => {
-  return value >= 2_147_483_648
+  return value >= 0x80_00_00_00
     ? writeBigVuint(dataView, offset, BigInt(value))
     : writeSmallVuint(dataView, offset, Number(value));
 };
