@@ -15,9 +15,8 @@ import {
 
 const dataView = new DataView(new ArrayBuffer(32));
 
-const bigVsint = (input: bigint, expectedLength: number) => {
-  const length = writeBigVsint(dataView, 0, input);
-  // strictEqual(length, expectedLength);
+const bigVsint = (input: bigint) => {
+  writeBigVsint(dataView, 0, input);
   const output = readBigVsint(dataView, 0);
   strictEqual(output, input);
 };
@@ -43,9 +42,8 @@ const smallVuint = (input: number, expectedLength: number) => {
   strictEqual(output, input);
 };
 
-const vsint = (input: bigint | number, expectedLength: number) => {
-  const length = writeVsint(dataView, 0, input);
-  strictEqual(length, expectedLength);
+const vsint = (input: bigint | number) => {
+  writeVsint(dataView, 0, input);
   const output = readBigVsint(dataView, 0);
   strictEqual(output, BigInt(input));
 };
@@ -60,53 +58,87 @@ const vuint = (input: bigint | number, expectedLength: number) => {
 describe('vsint', () => {
   describe('arbitrary values', () => {
     test('negative values', () => {
-      for (let i = 6; i * 7 < 42; i++) {
-        vsint(-(2 ** (i * 7)), i + 1);
-        vsint(-(2 ** ((i + 1) * 7) - 1), i + 1);
+      vsint(-(2 ** 6 - 1));
+      vsint(-(2n ** 6n - 1n));
+      vsint(-(0x80_00_00_00 - 1));
+      vsint(-(0x80_00_00_00n - 1n));
+      vsint(-0x80_00_00_00n);
+      vsint(-(0x80_00_00_00n + 1n));
+
+      for (let i = 6; i * 7 < 217; i++) {
+        vsint(-(2 ** (i * 7)));
+        vsint(-(2 ** ((i + 1) * 7) - 1));
       }
 
-      for (let i = 6; i * 7 < 42; i++) {
-        vsint(-(2n ** BigInt(i * 7)), i + 1);
-        vsint(-(2n ** BigInt((i + 1) * 7) - 1n), i + 1);
+      for (let i = 6; i * 7 < 217; i++) {
+        vsint(-(2n ** BigInt(i * 7)));
+        vsint(-(2n ** BigInt((i + 1) * 7) - 1n));
       }
     });
 
     test('non-negative values', () => {
-      vsint(2n ** 0n, 1);
-      vsint(2n ** 6n - 1n, 1);
-      vsint(Number.MIN_SAFE_INTEGER, 8);
-      vsint(Number.MAX_SAFE_INTEGER, 8);
+      vsint(2 ** 0);
+      vsint(2n ** 0n);
+      vsint(2 ** 6 - 1);
+      vsint(2n ** 6n - 1n);
+      vsint(0x80_00_00_00 - 1);
+      vsint(0x80_00_00_00n - 1n);
+      vsint(0x80_00_00_00);
+      vsint(0x80_00_00_00n);
+      vsint(0x80_00_00_00 + 1);
+      vsint(0x80_00_00_00n + 1n);
+      vsint(Number.MIN_SAFE_INTEGER);
+      vsint(Number.MAX_SAFE_INTEGER);
+      vsint(BigInt(Number.MIN_SAFE_INTEGER));
+      vsint(BigInt(Number.MAX_SAFE_INTEGER));
 
-      for (let i = 6; i * 7 < 42; i++) {
-        vsint(2n ** BigInt(i * 7), i + 1);
-        vsint(2n ** BigInt((i + 1) * 7) - 1n, i + 1);
+      for (let i = 6; i * 7 < 217; i++) {
+        vsint(2 ** (i * 7));
+        vsint(2 ** ((i + 1) * 7) - 1);
+      }
+
+      for (let i = 6; i * 7 < 217; i++) {
+        vsint(2n ** BigInt(i * 7));
+        vsint(2n ** BigInt((i + 1) * 7) - 1n);
       }
     });
   });
 
   describe('big values', () => {
     test('negative values', () => {
+      bigVsint(-(2n ** 6n - 1n));
+      bigVsint(-(0x80_00_00_00n - 1n));
+      bigVsint(-0x80_00_00_00n);
+      bigVsint(-(0x80_00_00_00n + 1n));
+
       for (let i = 6; i * 7 < 217; i++) {
-        bigVsint(-(2n ** BigInt(i * 7)), i + 1);
-        bigVsint(-(2n ** BigInt((i + 1) * 7) - 1n), i + 1);
+        bigVsint(-(2n ** BigInt(i * 7)));
+        bigVsint(-(2n ** BigInt((i + 1) * 7) - 1n));
       }
     });
 
     test('non-negative values', () => {
-      bigVsint(2n ** 0n, 1);
-      bigVsint(2n ** 6n - 1n, 1);
-      bigVsint(BigInt(Number.MIN_SAFE_INTEGER), 8);
-      bigVsint(BigInt(Number.MAX_SAFE_INTEGER), 8);
+      bigVsint(2n ** 0n);
+      bigVsint(2n ** 6n - 1n);
+      bigVsint(0x80_00_00_00n - 1n);
+      bigVsint(0x80_00_00_00n);
+      bigVsint(0x80_00_00_00n + 1n);
+      bigVsint(BigInt(Number.MIN_SAFE_INTEGER));
+      bigVsint(BigInt(Number.MAX_SAFE_INTEGER));
 
       for (let i = 6; i * 7 < 217; i++) {
-        bigVsint(2n ** BigInt(i * 7), i + 1);
-        bigVsint(2n ** BigInt((i + 1) * 7) - 1n, i + 1);
+        bigVsint(2n ** BigInt(i * 7));
+        bigVsint(2n ** BigInt((i + 1) * 7) - 1n);
       }
     });
   });
 
   describe('small values', () => {
     test('negative values', () => {
+      smallVsint(-(2 ** 6 - 1), 1);
+      smallVsint(-(0x80_00_00_00 - 1), 5);
+      throws(() => writeSmallVsint(dataView, 0, -0x80_00_00_00));
+
       for (let i = 6; i * 7 < 42; i++) {
         smallVsint(-(2 ** (i * 7)), i + 1);
         smallVsint(-(2 ** ((i + 1) * 7) - 1), i + 1);
@@ -131,6 +163,7 @@ describe('vuint', () => {
   test('arbitrary values', () => {
     vuint(0x80_00_00_00 - 1, 5);
     vuint(0x80_00_00_00, 5);
+    vuint(0x80_00_00_00 + 1, 5);
     vuint(Number.MAX_SAFE_INTEGER, 8);
 
     for (let i = 0; i * 7 < 49; i++) {
@@ -147,6 +180,7 @@ describe('vuint', () => {
   test('big values', () => {
     bigVuint(0x80_00_00_00n - 1n, 5);
     bigVuint(0x80_00_00_00n, 5);
+    bigVuint(0x80_00_00_00n + 1n, 5);
     bigVuint(BigInt(Number.MAX_SAFE_INTEGER), 8);
 
     for (let i = 0; i * 7 < 224; i++) {

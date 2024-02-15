@@ -137,7 +137,7 @@ export const writeVsint = (
   offset: number,
   value: bigint | number,
 ) => {
-  return value >= 0x80_00_00_00 || value < -0x80_00_00_00
+  return value >= 0x80_00_00_00 || value <= -0x80_00_00_00
     ? writeBigVsint(dataView, offset, BigInt(value))
     : writeSmallVsint(dataView, offset, Number(value));
 };
