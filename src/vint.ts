@@ -4,9 +4,7 @@ export const readBigVuint = (dataView: DataView, offset: number) => {
   while (true) {
     const byte = dataView.getUint8(offset++);
     value |= BigInt(byte & 127) << shift;
-    if ((byte & 128) === 0) {
-      break;
-    }
+    if ((byte & 128) === 0) break;
     shift += 7n;
   }
   return value;
@@ -18,12 +16,33 @@ export const readSmallVuint = (dataView: DataView, offset: number) => {
   while (true) {
     const byte = dataView.getUint8(offset++);
     value |= (byte & 127) << shift;
-    if ((byte & 128) === 0) {
-      break;
-    }
+    if ((byte & 128) === 0) break;
     shift += 7;
   }
   return value;
+};
+
+export const writeBigVsint = (
+  dataView: DataView,
+  offset: number,
+  value: bigint,
+) => {
+  const sign = value < 0 ? 1 : 0;
+  value = sign ? -value : value;
+
+  let byte = Number(value & 63n);
+  value >>= 6n;
+  if (value !== 0n) byte |= 128;
+  if (sign) byte |= 64;
+  dataView.setUint8(offset++, byte);
+
+  while (value !== 0n) {
+    byte = Number(value & 127n);
+    value >>= 7n;
+    if (value !== 0n) byte |= 128;
+    dataView.setUint8(offset++, byte);
+  }
+  return offset;
 };
 
 export const writeBigVuint = (
@@ -34,11 +53,33 @@ export const writeBigVuint = (
   do {
     let byte = Number(value & 127n);
     value >>= 7n;
-    if (value !== 0n) {
-      byte |= 128;
-    }
+    if (value !== 0n) byte |= 128;
     dataView.setUint8(offset++, byte);
   } while (value !== 0n);
+  return offset;
+};
+
+export const writeSmallVsint = (
+  dataView: DataView,
+  offset: number,
+  value: number,
+) => {
+  const sign = value < 0 ? 1 : 0;
+  value = sign ? -value : value;
+
+  let byte = value & 63;
+  value >>= 6;
+  if (value !== 0) byte |= 128;
+  if (sign) byte |= 64;
+  dataView.setUint8(offset++, byte);
+
+  while (value !== 0) {
+    byte = value & 127;
+    value >>= 7;
+    if (value !== 0) byte |= 128;
+    dataView.setUint8(offset++, byte);
+  }
+  return offset;
 };
 
 export const writeSmallVuint = (
@@ -49,11 +90,10 @@ export const writeSmallVuint = (
   do {
     let byte = value & 127;
     value >>= 7;
-    if (value !== 0) {
-      byte |= 128;
-    }
+    if (value !== 0) byte |= 128;
     dataView.setUint8(offset++, byte);
   } while (value !== 0);
+  return offset;
 };
 
 export const writeVuint = (
