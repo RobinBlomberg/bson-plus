@@ -1,4 +1,5 @@
 export const enum DataType {
+  DECIMAL,
   FLOAT32,
   FLOAT64,
   INT8,

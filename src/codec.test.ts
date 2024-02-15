@@ -20,6 +20,12 @@ const testRoundTrip = <Type extends DataType>(
 
 describe('Codec', () => {
   describe('write/read', () => {
+    test('decimal', () => {
+      testRoundTrip(DataType.DECIMAL, 123.456_789);
+      // testRoundTrip(DataType.DECIMAL, 0.142_857_142_857_142_85);
+      // testRoundTrip(DataType.DECIMAL, -123.456_789);
+    });
+
     test('float32', () => {
       testRoundTrip(DataType.FLOAT32, 0);
       testRoundTrip(DataType.FLOAT32, 3.5);

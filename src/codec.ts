@@ -9,12 +9,44 @@ import type {
 export const createCodec = (dataView: DataView) => {
   let offset = 0;
 
+  const readUleb128 = () => {
+    let value = 0;
+    let shift = 0;
+    while (true) {
+      const byte = dataView.getUint8(offset++);
+      value |= (byte & 127) << shift;
+      if ((byte & 128) === 0) {
+        break;
+      }
+      shift += 7;
+    }
+    return value;
+  };
+
+  const writeUleb128 = (value: number) => {
+    value |= 0;
+    do {
+      let byte = value & 127;
+      value >>= 7;
+      if (value !== 0) {
+        byte |= 128;
+      }
+      dataView.setUint8(offset++, byte);
+    } while (value !== 0);
+  };
+
   const codec: Codec = {
     getOffset: () => {
       return offset;
     },
     read: <Type extends DataType>(type: Type) => {
       switch (type) {
+        case DataType.DECIMAL: {
+          const integer = readUleb128();
+          const significand = readUleb128();
+          const value = +`${integer}.${significand}`;
+          return value as DataValueInput<Type>;
+        }
         case DataType.FLOAT32: {
           const value = dataView.getFloat32(offset);
           offset += 4;
@@ -45,16 +77,7 @@ export const createCodec = (dataView: DataView) => {
           return value as DataValueInput<Type>;
         }
         case DataType.ULEB128: {
-          let value = 0;
-          let shift = 0;
-          while (true) {
-            const byte = dataView.getUint8(offset++);
-            value |= (byte & 127) << shift;
-            if ((byte & 128) === 0) {
-              break;
-            }
-            shift += 7;
-          }
+          const value = readUleb128();
           return value as DataValueInput<Type>;
         }
         case DataType.UINT8: {
@@ -92,6 +115,18 @@ export const createCodec = (dataView: DataView) => {
     },
     write: <Type extends DataType>(type: Type, value: DataValueInput<Type>) => {
       switch (type) {
+        case DataType.DECIMAL: {
+          const integer = value | 0;
+          writeUleb128(integer);
+          const string = String(value);
+          const decimalSeparatorIndex = string.indexOf('.');
+          const significand =
+            decimalSeparatorIndex === -1
+              ? 0
+              : +string.slice(decimalSeparatorIndex + 1);
+          writeUleb128(significand);
+          break;
+        }
         case DataType.FLOAT32:
           dataView.setFloat32(offset, value as number);
           offset += 4;
@@ -116,15 +151,7 @@ export const createCodec = (dataView: DataView) => {
           offset += 8;
           break;
         case DataType.ULEB128: {
-          (value as number) |= 0;
-          do {
-            let byte = value & 127;
-            (value as number) >>= 7;
-            if (value !== 0) {
-              byte |= 128;
-            }
-            dataView.setUint8(offset++, byte);
-          } while (value !== 0);
+          writeUleb128(value as number);
           break;
         }
         case DataType.UINT8:
