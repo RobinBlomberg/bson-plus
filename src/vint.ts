@@ -10,6 +10,22 @@ export const readBigVuint = (dataView: DataView, offset: number) => {
   return value;
 };
 
+export const readSmallVsint = (dataView: DataView, offset: number) => {
+  let byte = dataView.getUint8(offset++);
+  let value = byte & 63;
+  const sign = byte & 64;
+  if (byte & 128) {
+    let shift = 6;
+    while (true) {
+      byte = dataView.getUint8(offset++);
+      value |= (byte & 127) << shift;
+      if ((byte & 128) === 0) break;
+      shift += 7;
+    }
+  }
+  return sign === 0 ? value : -value;
+};
+
 export const readSmallVuint = (dataView: DataView, offset: number) => {
   let value = 0;
   let shift = 0;
@@ -65,12 +81,12 @@ export const writeSmallVsint = (
   value: number,
 ) => {
   const sign = value < 0 ? 1 : 0;
-  value = sign ? -value : value;
+  value = sign === 1 ? -value : value;
 
   let byte = value & 63;
   value >>= 6;
   if (value !== 0) byte |= 128;
-  if (sign) byte |= 64;
+  if (sign === 1) byte |= 64;
   dataView.setUint8(offset++, byte);
 
   while (value !== 0) {
