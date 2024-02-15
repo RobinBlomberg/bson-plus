@@ -3,7 +3,7 @@ export const readBigVuint = (dataView: DataView, offset: number) => {
   let shift = 0n;
   while (true) {
     const byte = dataView.getUint8(offset++);
-    value |= (BigInt(byte) & 127n) << shift;
+    value |= BigInt(byte & 127) << shift;
     if ((byte & 128) === 0) {
       break;
     }
