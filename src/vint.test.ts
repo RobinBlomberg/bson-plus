@@ -183,6 +183,9 @@ describe('vuint', () => {
   });
 
   test('vuint', () => {
+    vuint(0, 1);
+    vuint(127, 1);
+    vuint(128, 2);
     vuint(0x80_00_00_00 - 1, 5);
     vuint(0x80_00_00_00, 5);
     vuint(0x80_00_00_00 + 1, 5);
