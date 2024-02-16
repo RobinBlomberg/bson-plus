@@ -52,6 +52,7 @@
       "@robinblomberg/prettier"
     ],
     "rules": {
+      "no-implicit-coercion": 0,
       "unicorn/no-new-array": 0
     }
   },

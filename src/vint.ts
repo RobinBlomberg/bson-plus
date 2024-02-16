@@ -58,6 +58,8 @@ export const readSmallVuint = (dataView: DataView, offset: number) => {
   return value;
 };
 
+export const readVsint = readBigVsint;
+
 export const writeBigVsint = (
   dataView: DataView,
   offset: number,
