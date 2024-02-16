@@ -6,8 +6,8 @@ const dataView = new DataView(new ArrayBuffer(32));
 
 const decimal = (input: number, expectedLength: number) => {
   for (const value of [input, -input]) {
-    const length = writeDecimal(dataView, 0, value);
-    const output = readDecimal(dataView, 0);
+    const length = writeDecimal([dataView, 0], value);
+    const output = readDecimal([dataView, 0]);
     strictEqual(output, value);
     strictEqual(length, expectedLength);
   }

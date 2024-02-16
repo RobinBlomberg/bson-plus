@@ -1,12 +1,10 @@
+import type { DataViewIterator } from './data-view-iterator.js';
 import { writeVuint } from './vint.js';
 
-export const writeVbits = (
-  dataView: DataView,
-  offset: number,
-  value: boolean[],
-) => {
+export const writeVbits = (iterator: DataViewIterator, value: boolean[]) => {
+  const dataView = iterator[0];
   const length = value.length;
-  offset = writeVuint(dataView, offset, length);
+  writeVuint(iterator, length);
   let i = 0;
   while (i < length) {
     let byte = 0;
@@ -15,6 +13,6 @@ export const writeVbits = (
       if (value[i++] === true) byte |= shift;
       shift <<= 1;
     }
-    dataView.setUint8(offset++, byte);
+    dataView.setUint8(iterator[1]++, byte);
   }
 };

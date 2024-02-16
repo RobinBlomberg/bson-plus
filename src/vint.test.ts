@@ -16,41 +16,41 @@ import {
 const dataView = new DataView(new ArrayBuffer(32));
 
 const bigVsint = (input: bigint) => {
-  writeBigVsint(dataView, 0, input);
-  const output = readBigVsint(dataView, 0);
+  writeBigVsint([dataView, 0], input);
+  const output = readBigVsint([dataView, 0]);
   strictEqual(output, input);
 };
 
 const bigVuint = (input: bigint, expectedLength: number) => {
-  const length = writeBigVuint(dataView, 0, input);
-  const output = readBigVuint(dataView, 0);
+  const length = writeBigVuint([dataView, 0], input);
+  const output = readBigVuint([dataView, 0]);
   strictEqual(output, input);
   strictEqual(length, expectedLength);
 };
 
 const smallVsint = (input: number, expectedLength: number) => {
-  const length = writeSmallVsint(dataView, 0, input);
-  const output = readSmallVsint(dataView, 0);
+  const length = writeSmallVsint([dataView, 0], input);
+  const output = readSmallVsint([dataView, 0]);
   strictEqual(output, input);
   strictEqual(length, expectedLength);
 };
 
 const smallVuint = (input: number, expectedLength: number) => {
-  const length = writeSmallVuint(dataView, 0, input);
-  const output = readSmallVuint(dataView, 0);
+  const length = writeSmallVuint([dataView, 0], input);
+  const output = readSmallVuint([dataView, 0]);
   strictEqual(output, input);
   strictEqual(length, expectedLength);
 };
 
 const vsint = (input: bigint | number) => {
-  writeVsint(dataView, 0, input);
-  const output = readBigVsint(dataView, 0);
+  writeVsint([dataView, 0], input);
+  const output = readBigVsint([dataView, 0]);
   strictEqual(output, BigInt(input));
 };
 
 const vuint = (input: bigint | number, expectedLength: number) => {
-  const length = writeVuint(dataView, 0, input);
-  const output = readBigVuint(dataView, 0);
+  const length = writeVuint([dataView, 0], input);
+  const output = readBigVuint([dataView, 0]);
   strictEqual(output, BigInt(input));
   strictEqual(length, expectedLength);
 };
@@ -89,7 +89,7 @@ describe('vsint', () => {
     test('-', () => {
       smallVsint(-(2 ** 6 - 1), 1);
       smallVsint(-(0x80_00_00_00 - 1), 5);
-      throws(() => writeSmallVsint(dataView, 0, -0x80_00_00_00));
+      throws(() => writeSmallVsint([dataView, 0], -0x80_00_00_00));
 
       for (let i = 6; i * 7 < 42; i++) {
         smallVsint(-(2 ** (i * 7)), i + 1);
@@ -101,7 +101,7 @@ describe('vsint', () => {
       smallVsint(2 ** 0, 1);
       smallVsint(2 ** 6 - 1, 1);
       smallVsint(0x80_00_00_00 - 1, 5);
-      throws(() => writeSmallVsint(dataView, 0, 0x80_00_00_00));
+      throws(() => writeSmallVsint([dataView, 0], 0x80_00_00_00));
 
       for (let i = 6; i * 7 < 42; i++) {
         smallVsint(2 ** (i * 7), i + 1);
@@ -174,7 +174,7 @@ describe('vuint', () => {
 
   test('smallVuint', () => {
     smallVuint(0x80_00_00_00 - 1, 5);
-    throws(() => writeSmallVuint(dataView, 0, 0x80_00_00_00));
+    throws(() => writeSmallVuint([dataView, 0], 0x80_00_00_00));
 
     for (let i = 0; i * 7 < 28; i++) {
       smallVuint(2 ** (i * 7), i + 1);

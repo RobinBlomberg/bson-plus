@@ -1,10 +1,12 @@
+import type { DataViewIterator } from './data-view-iterator.js';
 import { readVuint, writeVuint } from './vint.js';
 
-export const readDecimal = (dataView: DataView, offset: number) => {
-  const byte = dataView.getUint8(offset++);
+export const readDecimal = (iterator: DataViewIterator) => {
+  const dataView = iterator[0];
+  const byte = dataView.getUint8(iterator[1]++);
   const sign = byte & 128;
   const significandLength = byte & 127;
-  let value = Number(readVuint(dataView, offset));
+  let value = Number(readVuint(iterator));
 
   if (significandLength !== 0) {
     const string = String(value);
@@ -16,10 +18,10 @@ export const readDecimal = (dataView: DataView, offset: number) => {
 };
 
 export const writeDecimal = (
-  dataView: DataView,
-  offset: number,
+  iterator: DataViewIterator,
   value: bigint | number,
 ) => {
+  const dataView = iterator[0];
   const sign = Object.is(value, -0) || value < 0 ? 128 : 0;
   if (sign !== 0) value = -value;
   const string = String(value);
@@ -34,6 +36,6 @@ export const writeDecimal = (
     }
   }
 
-  dataView.setUint8(offset++, sign | significandLength);
-  return writeVuint(dataView, offset, value);
+  dataView.setUint8(iterator[1]++, sign | significandLength);
+  return writeVuint(iterator, value);
 };
