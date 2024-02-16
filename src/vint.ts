@@ -1,7 +1,7 @@
 export const readBigVsint = (dataView: DataView, offset: number) => {
   let byte = dataView.getUint8(offset++);
-  let value = BigInt(byte & 63);
   const sign = byte & 64;
+  let value = BigInt(byte & 63);
 
   if (byte & 128) {
     let shift = 6n;
@@ -30,8 +30,8 @@ export const readBigVuint = (dataView: DataView, offset: number) => {
 
 export const readSmallVsint = (dataView: DataView, offset: number) => {
   let byte = dataView.getUint8(offset++);
-  let value = byte & 63;
   const sign = byte & 64;
+  let value = byte & 63;
 
   if (byte & 128) {
     let shift = 6;
@@ -60,18 +60,18 @@ export const readSmallVuint = (dataView: DataView, offset: number) => {
 
 export const readVsint = readBigVsint;
 
+export const readVuint = readBigVuint;
+
 export const writeBigVsint = (
   dataView: DataView,
   offset: number,
   value: bigint,
 ) => {
-  const sign = value < 0 ? 1 : 0;
-  value = sign ? -value : value;
-
-  let byte = Number(value & 63n);
+  const sign = value < 0 ? 64 : 0;
+  if (sign !== 0) value = -value;
+  let byte = sign | Number(value & 63n);
   value >>= 6n;
   if (value !== 0n) byte |= 128;
-  if (sign) byte |= 64;
   dataView.setUint8(offset++, byte);
 
   while (value !== 0n) {
@@ -102,13 +102,11 @@ export const writeSmallVsint = (
   offset: number,
   value: number,
 ) => {
-  const sign = value < 0 ? 1 : 0;
-  value = sign === 1 ? -value : value;
-
-  let byte = value & 63;
+  const sign = value < 0 ? 64 : 0;
+  if (sign !== 0) value = -value;
+  let byte = sign | (value & 63);
   value >>= 6;
   if (value !== 0) byte |= 128;
-  if (sign === 1) byte |= 64;
   dataView.setUint8(offset++, byte);
 
   while (value !== 0) {
