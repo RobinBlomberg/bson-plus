@@ -1,4 +1,1 @@
-export type Iterator = {
-  offset: number;
-  view: DataView;
-};
+export type Iterator = [dataView: DataView, offset: number];
