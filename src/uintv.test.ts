@@ -1,12 +1,12 @@
 import { strictEqual } from 'assert';
 import { test } from 'vitest';
-import { readUintv, writeUintv } from './uintv.js';
+import { readBigUintv, writeBigUintv } from './uintv.js';
 
 const dataView = new DataView(new ArrayBuffer(32));
 
 const uintv = (input: bigint) => {
-  writeUintv([dataView, 0], input);
-  const output = readUintv([dataView, 0]);
+  writeBigUintv([dataView, 0], input);
+  const output = readBigUintv([dataView, 0]);
   strictEqual(output, input);
 };
 
