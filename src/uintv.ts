@@ -15,7 +15,7 @@ export const readBigUintv = (iterator: Iterator) => {
     // If the current byte is not a continuation byte, return the value:
     if ((byte & 0b1000_0000) === 0) return value;
 
-    // Increase the shift to the next 7 bits:
+    // Increase the shift by 7 bits:
     shift += 7n;
   }
 };
@@ -35,7 +35,7 @@ export const readSmallUintv = (iterator: Iterator) => {
     // If the current byte is not a continuation byte, return the value:
     if ((byte & 0b1000_0000) === 0) return value;
 
-    // Increase the shift to the next 7 bits:
+    // Increase the shift by 7 bits:
     shift += 7;
   }
 };
