@@ -1,6 +1,6 @@
 import type { Iterator } from './iterator.js';
 
-export const readBigIntv = (iterator: Iterator) => {
+export const readBigInt = (iterator: Iterator) => {
   const dataView = iterator[0];
 
   // Read the first byte:
@@ -31,7 +31,7 @@ export const readBigIntv = (iterator: Iterator) => {
   return sign === 0 ? value : -value;
 };
 
-export const readSmallIntv = (iterator: Iterator) => {
+export const readSmallInt = (iterator: Iterator) => {
   const dataView = iterator[0];
 
   // Read the first byte:
@@ -62,11 +62,11 @@ export const readSmallIntv = (iterator: Iterator) => {
   return sign === 0 ? value : -value;
 };
 
-export const readIntv = (iterator: Iterator) => {
-  return Number(readBigIntv(iterator));
+export const readInt = (iterator: Iterator) => {
+  return Number(readBigInt(iterator));
 };
 
-export const writeBigIntv = (iterator: Iterator, value: bigint) => {
+export const writeBigInt = (iterator: Iterator, value: bigint) => {
   const dataView = iterator[0];
 
   // Get the sign bit:
@@ -99,7 +99,7 @@ export const writeBigIntv = (iterator: Iterator, value: bigint) => {
   }
 };
 
-export const writeSmallIntv = (iterator: Iterator, value: number) => {
+export const writeSmallInt = (iterator: Iterator, value: number) => {
   const dataView = iterator[0];
 
   // Get the sign bit:
@@ -132,10 +132,10 @@ export const writeSmallIntv = (iterator: Iterator, value: number) => {
   }
 };
 
-export const writeIntv = (iterator: Iterator, value: bigint | number) => {
+export const writeInt = (iterator: Iterator, value: bigint | number) => {
   if (typeof value === 'bigint' || Math.abs(value) >= 0x80_00_00_00) {
-    writeBigIntv(iterator, BigInt(value));
+    writeBigInt(iterator, BigInt(value));
   } else {
-    writeSmallIntv(iterator, value);
+    writeSmallInt(iterator, value);
   }
 };

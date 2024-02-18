@@ -1,8 +1,8 @@
 export type NumberSchema = {
-  type?: 'float' | 'int' | 'int8' | 'uint' | 'uint8';
+  type?: 'float' | 'int' | 'int8' | 'number' | 'uint' | 'uint8';
 };
 
 export type StringSchema = {
-  isUnicode256?: boolean;
+  type?: 'string' | 'string256';
   length?: number;
 };

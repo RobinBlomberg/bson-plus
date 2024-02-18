@@ -1,5 +1,5 @@
 import type { Iterator } from './iterator.js';
-import { readBigUintv, writeBigUintv } from './uintv.js';
+import { readBigUint, writeBigUint } from './uint.js';
 
 export const readDecimal = (iterator: Iterator) => {
   // Read the sign and the length of the significand:
@@ -8,7 +8,7 @@ export const readDecimal = (iterator: Iterator) => {
   const significandLength = byte & 0b0111_1111;
 
   // Read the integer representation of the value:
-  const integer = readBigUintv(iterator);
+  const integer = readBigUint(iterator);
 
   // Convert the integer representation to a floating-point number value:
   let absoluteValue;
@@ -52,5 +52,5 @@ export const writeDecimal = (iterator: Iterator, value: number) => {
   iterator[0].setUint8(iterator[1]++, sign | (significandLength & 0b0111_1111));
 
   // Write the value represented as an integer:
-  writeBigUintv(iterator, BigInt(concatenatedInteger! ?? string));
+  writeBigUint(iterator, BigInt(concatenatedInteger! ?? string));
 };

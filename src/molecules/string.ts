@@ -1,15 +1,11 @@
 import type { Iterator } from '../atoms/iterator.js';
-import {
-  readSmallUintv,
-  writeBigUintv,
-  writeSmallUintv,
-} from '../atoms/uintv.js';
+import { readSmallUint, writeBigUint, writeSmallUint } from '../atoms/uint.js';
 import type { StringSchema } from './schemas.js';
 
 export const readString = (iterator: Iterator, schema: StringSchema = {}) => {
-  const length = schema.length ?? readSmallUintv(iterator);
+  const length = schema.length ?? readSmallUint(iterator);
 
-  if (schema.isUnicode256) {
+  if (schema.type === 'string256') {
     const dataView = iterator[0];
     let value = '';
 
@@ -23,7 +19,7 @@ export const readString = (iterator: Iterator, schema: StringSchema = {}) => {
   let value = '';
 
   for (let i = 0; i < length; i++) {
-    value += String.fromCodePoint(readSmallUintv(iterator));
+    value += String.fromCodePoint(readSmallUint(iterator));
   }
 
   return value;
@@ -35,10 +31,10 @@ export const writeString = (
   schema: StringSchema = {},
 ) => {
   if (schema.length === undefined) {
-    writeBigUintv(iterator, BigInt(value.length));
+    writeBigUint(iterator, BigInt(value.length));
   }
 
-  if (schema.isUnicode256) {
+  if (schema.type === 'string256') {
     const dataView = iterator[0];
 
     for (const character of value) {
@@ -46,7 +42,7 @@ export const writeString = (
     }
   } else {
     for (const character of value) {
-      writeSmallUintv(iterator, character.codePointAt(0)!);
+      writeSmallUint(iterator, character.codePointAt(0)!);
     }
   }
 };

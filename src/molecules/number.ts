@@ -1,7 +1,7 @@
 import { readDecimal, writeDecimal } from '../atoms/decimal.js';
-import { readIntv, writeIntv } from '../atoms/intv.js';
+import { readInt, writeInt } from '../atoms/int.js';
 import type { Iterator } from '../atoms/iterator.js';
-import { readUintv, writeUintv } from '../atoms/uintv.js';
+import { readUint, writeUint } from '../atoms/uint.js';
 import type { NumberSchema } from './schemas.js';
 
 export const readNumber = (iterator: Iterator, schema: NumberSchema = {}) => {
@@ -12,11 +12,11 @@ export const readNumber = (iterator: Iterator, schema: NumberSchema = {}) => {
       return value;
     }
     case 'int':
-      return readIntv(iterator);
+      return readInt(iterator);
     case 'int8':
       return iterator[0].getInt8(iterator[1]++);
     case 'uint':
-      return readUintv(iterator);
+      return readUint(iterator);
     case 'uint8':
       return iterator[0].getUint8(iterator[1]++);
     default:
@@ -36,13 +36,13 @@ export const writeNumber = (
       break;
     }
     case 'int':
-      writeIntv(iterator, value);
+      writeInt(iterator, value);
       break;
     case 'int8':
       iterator[0].setInt8(iterator[1]++, value);
       break;
     case 'uint':
-      writeUintv(iterator, value);
+      writeUint(iterator, value);
       break;
     case 'uint8':
       iterator[0].setUint8(iterator[1]++, value);

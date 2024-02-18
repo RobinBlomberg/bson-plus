@@ -1,6 +1,6 @@
 import type { Iterator } from './iterator.js';
 
-export const readBigUintv = (iterator: Iterator) => {
+export const readBigUint = (iterator: Iterator) => {
   const dataView = iterator[0];
   let shift = 0n;
   let value = 0n;
@@ -20,7 +20,7 @@ export const readBigUintv = (iterator: Iterator) => {
   }
 };
 
-export const readSmallUintv = (iterator: Iterator) => {
+export const readSmallUint = (iterator: Iterator) => {
   const dataView = iterator[0];
   let shift = 0;
   let value = 0;
@@ -40,11 +40,11 @@ export const readSmallUintv = (iterator: Iterator) => {
   }
 };
 
-export const readUintv = (iterator: Iterator) => {
-  return Number(readBigUintv(iterator));
+export const readUint = (iterator: Iterator) => {
+  return Number(readBigUint(iterator));
 };
 
-export const writeBigUintv = (iterator: Iterator, value: bigint) => {
+export const writeBigUint = (iterator: Iterator, value: bigint) => {
   const dataView = iterator[0];
 
   do {
@@ -62,7 +62,7 @@ export const writeBigUintv = (iterator: Iterator, value: bigint) => {
   } while (value !== 0n);
 };
 
-export const writeSmallUintv = (iterator: Iterator, value: number) => {
+export const writeSmallUint = (iterator: Iterator, value: number) => {
   const dataView = iterator[0];
 
   do {
@@ -80,10 +80,10 @@ export const writeSmallUintv = (iterator: Iterator, value: number) => {
   } while (value !== 0);
 };
 
-export const writeUintv = (iterator: Iterator, value: bigint | number) => {
+export const writeUint = (iterator: Iterator, value: bigint | number) => {
   if (typeof value === 'bigint' || value >= 0x80_00_00_00) {
-    writeBigUintv(iterator, BigInt(value));
+    writeBigUint(iterator, BigInt(value));
   } else {
-    writeSmallUintv(iterator, value);
+    writeSmallUint(iterator, value);
   }
 };

@@ -1,13 +1,13 @@
 import { strictEqual, throws } from 'assert';
 import { describe, test } from 'vitest';
 import {
-  readBigIntv,
-  readIntv,
-  readSmallIntv,
-  writeBigIntv,
-  writeIntv,
-  writeSmallIntv,
-} from './intv.js';
+  readBigInt,
+  readInt,
+  readSmallInt,
+  writeBigInt,
+  writeInt,
+  writeSmallInt,
+} from './int.js';
 import type { Iterator } from './iterator.js';
 
 const dataView = new DataView(new ArrayBuffer(32));
@@ -41,21 +41,21 @@ const createAssert = <Value extends bigint | number>(
   };
 };
 
-const bigIntv = createAssert(readBigIntv, writeBigIntv);
-const smallIntv = createAssert(readSmallIntv, writeSmallIntv);
-const intv = createAssert(readIntv, writeIntv);
+const bigInt = createAssert(readBigInt, writeBigInt);
+const smallInt = createAssert(readSmallInt, writeSmallInt);
+const int = createAssert(readInt, writeInt);
 
-describe('intv', () => {
-  test('bigIntv', () => {
-    bigIntv(0n, 1);
-    bigIntv(63n, 1);
-    bigIntv(64n, 2);
-    bigIntv(123_456n, 3);
-    bigIntv(12_345_678_901_234_567_890n, 10);
-    bigIntv(123_456_789_012_345_678_901_234_567_890n, 14);
+describe('int', () => {
+  test('bigInt', () => {
+    bigInt(0n, 1);
+    bigInt(63n, 1);
+    bigInt(64n, 2);
+    bigInt(123_456n, 3);
+    bigInt(12_345_678_901_234_567_890n, 10);
+    bigInt(123_456_789_012_345_678_901_234_567_890n, 14);
 
     for (let i = 0; i < 500; i++) {
-      bigIntv(
+      bigInt(
         BigInt(
           Math.round(
             (Math.random() *
@@ -67,27 +67,27 @@ describe('intv', () => {
     }
   });
 
-  test('smallIntv', () => {
-    smallIntv(0, 1);
-    smallIntv(63, 1);
-    smallIntv(64, 2);
-    smallIntv(255, 2);
-    smallIntv(8191, 2);
-    smallIntv(8192, 3);
-    smallIntv(2_147_483_647, 5);
-    throws(() => smallIntv(2_147_483_648));
+  test('smallInt', () => {
+    smallInt(0, 1);
+    smallInt(63, 1);
+    smallInt(64, 2);
+    smallInt(255, 2);
+    smallInt(8191, 2);
+    smallInt(8192, 3);
+    smallInt(2_147_483_647, 5);
+    throws(() => smallInt(2_147_483_648));
   });
 
-  test('intv', () => {
-    intv(0, 1);
-    intv(63, 1);
-    intv(64, 2);
-    intv(255, 2);
-    intv(8191, 2);
-    intv(8192, 3);
-    intv(2_147_483_647, 5);
-    intv(2_147_483_648, 5);
-    intv(Number.MIN_SAFE_INTEGER, 8);
-    intv(Number.MAX_SAFE_INTEGER, 8);
+  test('int', () => {
+    int(0, 1);
+    int(63, 1);
+    int(64, 2);
+    int(255, 2);
+    int(8191, 2);
+    int(8192, 3);
+    int(2_147_483_647, 5);
+    int(2_147_483_648, 5);
+    int(Number.MIN_SAFE_INTEGER, 8);
+    int(Number.MAX_SAFE_INTEGER, 8);
   });
 });
