@@ -1,5 +1,5 @@
-import { deepStrictEqual } from 'assert';
-import { describe, test } from 'vitest';
+import { deepStrictEqual, throws } from 'assert';
+import { describe, it } from 'vitest';
 import { readBits, writeBits } from './bits.js';
 
 const dataView = new DataView(new ArrayBuffer(32));
@@ -12,7 +12,7 @@ const bits = (input: number[]) => {
 };
 
 describe('bits', () => {
-  test('9-byte values', () => {
+  it('should support 9-byte values', () => {
     bits([]);
     bits([0]);
     bits([0, 0]);
@@ -50,9 +50,11 @@ describe('bits', () => {
     }
   });
 
-  test.skip('10-byte values', () => {
-    bits([
-      467, 119, 46, 387, 512, 305, 458, 418, 264, 247, 383, 362, 264, 77, 398,
-    ]);
+  it('should not support 10-byte values', () => {
+    throws(() => {
+      bits([
+        467, 119, 46, 387, 512, 305, 458, 418, 264, 247, 383, 362, 264, 77, 398,
+      ]);
+    });
   });
 });
