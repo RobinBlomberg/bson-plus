@@ -51,7 +51,7 @@ describe('bits', () => {
   it('should read multi-byte values correctly', () => {
     bits([64, 512]);
 
-    for (let i = 0; i < 100; i++) {
+    for (let i = 0; i < 500; i++) {
       bits(
         Array.from({ length: Math.round(Math.random() * 10) }, () =>
           Math.floor(Math.random() * 8192),

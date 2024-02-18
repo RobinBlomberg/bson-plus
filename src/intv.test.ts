@@ -5,7 +5,7 @@ import type { Iterator } from './iterator.js';
 
 const dataView = new DataView(new ArrayBuffer(32));
 
-const intv = (input: bigint, expectedLength: number) => {
+const intv = (input: bigint, expectedLength?: number) => {
   for (const value of [input, -input]) {
     // Write:
     const iterator: Iterator = [dataView, 0];
@@ -19,8 +19,11 @@ const intv = (input: bigint, expectedLength: number) => {
 
     // Assertions:
     strictEqual(output, value);
-    strictEqual(writeLength, expectedLength);
-    strictEqual(readLength, expectedLength);
+
+    if (expectedLength !== undefined) {
+      strictEqual(writeLength, expectedLength);
+      strictEqual(readLength, expectedLength);
+    }
   }
 };
 
@@ -31,4 +34,16 @@ test('intv', () => {
   intv(123_456n, 3);
   intv(12_345_678_901_234_567_890n, 10);
   intv(123_456_789_012_345_678_901_234_567_890n, 14);
+
+  for (let i = 0; i < 500; i++) {
+    intv(
+      BigInt(
+        Math.round(
+          (Math.random() *
+            (Number.MAX_SAFE_INTEGER + Number.MIN_SAFE_INTEGER)) /
+            2,
+        ),
+      ),
+    );
+  }
 });

@@ -5,7 +5,7 @@ import { readBigUintv, writeBigUintv } from './uintv.js';
 
 const dataView = new DataView(new ArrayBuffer(32));
 
-const uintv = (input: bigint, expectedLength: number) => {
+const uintv = (input: bigint, expectedLength?: number) => {
   // Write:
   const iterator: Iterator = [dataView, 0];
   writeBigUintv(iterator, input);
@@ -18,8 +18,11 @@ const uintv = (input: bigint, expectedLength: number) => {
 
   // Assertions:
   strictEqual(output, input);
-  strictEqual(writeLength, expectedLength);
-  strictEqual(readLength, expectedLength);
+
+  if (expectedLength !== undefined) {
+    strictEqual(writeLength, expectedLength);
+    strictEqual(readLength, expectedLength);
+  }
 };
 
 test('uintv', () => {
@@ -29,4 +32,8 @@ test('uintv', () => {
   uintv(123_456n, 3);
   uintv(12_345_678_901_234_567_890n, 10);
   uintv(123_456_789_012_345_678_901_234_567_890n, 14);
+
+  for (let i = 0; i < 500; i++) {
+    uintv(BigInt(Math.round(Math.random() * Number.MAX_SAFE_INTEGER)));
+  }
 });

@@ -5,7 +5,7 @@ import type { Iterator } from './iterator.js';
 
 const dataView = new DataView(new ArrayBuffer(32));
 
-const decimal = (input: number, expectedLength: number) => {
+const decimal = (input: number, expectedLength?: number) => {
   for (const value of [input, -input]) {
     // Write:
     const iterator: Iterator = [dataView, 0];
@@ -19,8 +19,11 @@ const decimal = (input: number, expectedLength: number) => {
 
     // Assertions:
     strictEqual(output, Object.is(value, -0) ? 0 : value);
-    strictEqual(writeLength, expectedLength);
-    strictEqual(readLength, expectedLength);
+
+    if (expectedLength !== undefined) {
+      strictEqual(writeLength, expectedLength);
+      strictEqual(readLength, expectedLength);
+    }
   }
 };
 
@@ -31,4 +34,8 @@ test('decimal', () => {
   decimal(3.141_592_653_589_793, 9);
   decimal(9_007_199_254_740_991, 9);
   decimal(9_007_199.254_740_991, 9);
+
+  for (let i = 0; i < 500; i++) {
+    decimal(Math.random() * 1_000_000);
+  }
 });
