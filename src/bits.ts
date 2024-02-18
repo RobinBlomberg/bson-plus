@@ -32,7 +32,7 @@ export const readBits = (iterator: Iterator, valueLengths: number[]) => {
       valueLength -= readLength;
       byte = dataView.getUint8(iterator[1]++);
       offset = 0;
-      shift = readLength;
+      shift += readLength;
     }
   }
 

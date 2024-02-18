@@ -1,4 +1,4 @@
-import { deepStrictEqual, throws } from 'assert';
+import { deepStrictEqual } from 'assert';
 import { describe, it } from 'vitest';
 import { readBits, writeBits } from './bits.js';
 
@@ -28,13 +28,11 @@ describe('bits', () => {
     bits([4, 4, 4]);
     bits([1, 2, 3, 4, 5, 6, 7, 6, 5, 4, 3, 2, 1]);
     bits([10, 0, 9, 1, 8, 2, 7, 3, 6, 4, 5, 5]);
-    bits([
-      29, 23, 32, 25, 1, 31, 4, 30, 5, 16, 22, 17, 8, 19, 28, 10, 13, 26, 2,
-    ]);
+    bits([29, 23, 32, 25, 1, 31, 4, 30, 5, 16, 22, 17, 8, 19, 28, 10, 13, 26]);
     bits([3, 4, 28, 29, 14, 9, 15, 31, 1, 25, 26, 11, 13, 5, 24, 32, 2, 17, 6]);
     bits([200, 500]);
     bits([512]);
-    bits([200, 500, 513, 300]);
+    bits([200, 513, 500, 300]);
 
     for (let i = 0; i < 1000; i++) {
       bits(
@@ -50,11 +48,7 @@ describe('bits', () => {
     }
   });
 
-  it('should not support 10-byte values', () => {
-    throws(() => {
-      bits([
-        467, 119, 46, 387, 512, 305, 458, 418, 264, 247, 383, 362, 264, 77, 398,
-      ]);
-    });
+  it('should be able to read multi-byte values', () => {
+    bits([64, 512]);
   });
 });
