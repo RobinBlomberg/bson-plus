@@ -30,7 +30,7 @@ export const readSmallUintv = (iterator: Iterator) => {
     const byte = dataView.getUint8(iterator[1]++);
 
     // Make the least significant 7 bits of the byte the most significant bits of the value:
-    value |= byte & (0b0111_1111 << shift);
+    value |= (byte & 0b0111_1111) << shift;
 
     // If the current byte is not a continuation byte, return the value:
     if ((byte & 0b1000_0000) === 0) return value;
