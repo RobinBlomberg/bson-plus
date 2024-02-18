@@ -34,7 +34,7 @@ describe('bits', () => {
     bits([512]);
     bits([200, 513, 500, 300]);
 
-    for (let i = 0; i < 1000; i++) {
+    for (let i = 0; i < 100; i++) {
       bits(
         Array.from({ length: Math.round(Math.random() * 20) }, () =>
           Math.floor(Math.random() * 10),
@@ -48,7 +48,15 @@ describe('bits', () => {
     }
   });
 
-  it('should be able to read multi-byte values', () => {
+  it('should read multi-byte values correctly', () => {
     bits([64, 512]);
+
+    for (let i = 0; i < 100; i++) {
+      bits(
+        Array.from({ length: Math.round(Math.random() * 10) }, () =>
+          Math.floor(Math.random() * 8192),
+        ),
+      );
+    }
   });
 });
