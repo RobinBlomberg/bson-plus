@@ -40,6 +40,10 @@ export const readSmallUintv = (iterator: Iterator) => {
   }
 };
 
+export const readUintv = (iterator: Iterator) => {
+  return Number(readBigUintv(iterator));
+};
+
 export const writeBigUintv = (iterator: Iterator, value: bigint) => {
   const dataView = iterator[0];
 
@@ -74,4 +78,12 @@ export const writeSmallUintv = (iterator: Iterator, value: number) => {
     // Write the byte:
     dataView.setUint8(iterator[1]++, byte);
   } while (value !== 0);
+};
+
+export const writeUintv = (iterator: Iterator, value: bigint | number) => {
+  if (typeof value === 'bigint' || value >= 0x80_00_00_00) {
+    writeBigUintv(iterator, BigInt(value));
+  } else {
+    writeSmallUintv(iterator, value);
+  }
 };
