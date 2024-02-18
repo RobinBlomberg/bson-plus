@@ -3,7 +3,7 @@ import type { Iterator } from './iterator.js';
 export const readBits = (iterator: Iterator, valueLengths: number[]) => {
   const dataView = iterator[0];
   const values: number[] = [];
-  let byte = dataView.getUint8(iterator[1]++);
+  let byte: number | undefined;
   let i = 0;
   let offset = 0;
   let shift = 0;
@@ -11,6 +11,7 @@ export const readBits = (iterator: Iterator, valueLengths: number[]) => {
   let valueLength = valueLengths[0];
 
   while (valueLength !== undefined) {
+    if (byte === undefined) byte = dataView.getUint8(iterator[1]++);
     value |= (byte & ((1 << valueLength) - 1)) << shift;
     byte >>= valueLength;
     offset += valueLength;
