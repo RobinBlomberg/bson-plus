@@ -1,9 +1,9 @@
 import { strictEqual } from 'assert';
 import { describe, test } from 'vitest';
-import type { Iterator } from '../atoms/iterator.js';
-import { DataType } from '../data-type.js';
-import type { StringSchema } from './schemas.js';
+import type { Iterator } from './iterator.js';
+import type { StringSchema } from './schema.js';
 import { readString, writeString } from './string.js';
+import { Type } from './type.js';
 
 const dataView = new DataView(new ArrayBuffer(32));
 
@@ -35,20 +35,20 @@ describe('string', () => {
 
   test('(type = "String", length = 20)', () => {
     string('Hello, Pierre Louÿs!', 21, {
-      type: DataType.String,
+      type: Type.String,
       length: 20,
     });
   });
 
   test('(type = "String256")', () => {
     string('Hello, Pierre Louÿs!', 21, {
-      type: DataType.String256,
+      type: Type.String256,
     });
   });
 
   test('(type = "String256", length = 20)', () => {
     string('Hello, Pierre Louÿs!', 20, {
-      type: DataType.String256,
+      type: Type.String256,
       length: 20,
     });
   });

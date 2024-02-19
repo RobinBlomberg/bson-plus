@@ -1,6 +1,6 @@
 import type { Iterator } from './iterator.js';
 
-export const readBits = (iterator: Iterator, valueLengths: number[]) => {
+export const readBitset = (iterator: Iterator, valueLengths: number[]) => {
   const dataView = iterator[0];
   const values: number[] = [];
   let byte: number | undefined;
@@ -40,7 +40,7 @@ export const readBits = (iterator: Iterator, valueLengths: number[]) => {
   return values;
 };
 
-export const writeBits = (
+export const writeBitset = (
   iterator: Iterator,
   valueLengths: number[],
   values: number[],

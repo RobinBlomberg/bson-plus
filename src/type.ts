@@ -1,9 +1,9 @@
-export const enum DataType {
+export const enum Type {
   BigInt,
   BigInt64,
   BigUint,
   BigUint64,
-  Bits,
+  Bitset,
   Decimal,
   Float32,
   Float64,
