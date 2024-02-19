@@ -22,7 +22,6 @@
     "ci:eslint": "pnpm lint:eslint --max-warnings=0",
     "ci:prettier": "pnpm lint:prettier",
     "ci:test": "pnpm test",
-    "dev": "tsx watch ./src/index.ts",
     "fix": "run-s fix:*",
     "fix:eslint": "eslint --fix src",
     "fix:prettier": "prettier --write src",
