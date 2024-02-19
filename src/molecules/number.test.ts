@@ -31,7 +31,7 @@ const number = (
 };
 
 describe('number', () => {
-  describe('()', () => {
+  describe('(type = "Decimal")', () => {
     test('negative values', () => {
       number(-1, 2);
       number(-123.456, 4);
@@ -50,53 +50,53 @@ describe('number', () => {
     });
   });
 
-  test('(type = "float")', () => {
-    number(0, 8, { type: 'float' });
-    number(1, 8, { type: 'float' });
-    number(123.456, 8, { type: 'float' });
-    number(3.141_592_653_589_793, 8, { type: 'float' });
-    number(9_007_199_254_740_991, 8, { type: 'float' });
-    number(9_007_199.254_740_991, 8, { type: 'float' });
+  test('(type = "Float64")', () => {
+    number(0, 8, { type: 'Float64' });
+    number(1, 8, { type: 'Float64' });
+    number(123.456, 8, { type: 'Float64' });
+    number(3.141_592_653_589_793, 8, { type: 'Float64' });
+    number(9_007_199_254_740_991, 8, { type: 'Float64' });
+    number(9_007_199.254_740_991, 8, { type: 'Float64' });
   });
 
-  test('(type = "int")', () => {
-    number(0, 1, { type: 'int' });
-    number(63, 1, { type: 'int' });
-    number(64, 2, { type: 'int' });
-    number(255, 2, { type: 'int' });
-    number(8191, 2, { type: 'int' });
-    number(8192, 3, { type: 'int' });
-    number(2_147_483_647, 5, { type: 'int' });
-    number(2_147_483_648, 5, { type: 'int' });
-    number(Number.MIN_SAFE_INTEGER, 8, { type: 'int' });
-    number(Number.MAX_SAFE_INTEGER, 8, { type: 'int' });
+  test('(type = "Int")', () => {
+    number(0, 1, { type: 'Int' });
+    number(63, 1, { type: 'Int' });
+    number(64, 2, { type: 'Int' });
+    number(255, 2, { type: 'Int' });
+    number(8191, 2, { type: 'Int' });
+    number(8192, 3, { type: 'Int' });
+    number(2_147_483_647, 5, { type: 'Int' });
+    number(2_147_483_648, 5, { type: 'Int' });
+    number(Number.MIN_SAFE_INTEGER, 8, { type: 'Int' });
+    number(Number.MAX_SAFE_INTEGER, 8, { type: 'Int' });
   });
 
-  test('(type = "int8")', () => {
-    number(0, 1, { type: 'int8' });
-    number(127, 1, { type: 'int8' });
-    number(-128, 1, { type: 'int8' });
-    throws(() => number(128, 2, { type: 'int8' }));
-    throws(() => number(-129, 2, { type: 'int8' }));
+  test('(type = "Int8")', () => {
+    number(0, 1, { type: 'Int8' });
+    number(127, 1, { type: 'Int8' });
+    number(-128, 1, { type: 'Int8' });
+    throws(() => number(128, 2, { type: 'Int8' }));
+    throws(() => number(-129, 2, { type: 'Int8' }));
   });
 
-  test('(type = "uint")', () => {
-    number(0, 1, { type: 'uint' });
-    number(127, 1, { type: 'uint' });
-    number(128, 2, { type: 'uint' });
-    number(255, 2, { type: 'uint' });
-    number(16_383, 2, { type: 'uint' });
-    number(16_384, 3, { type: 'uint' });
-    number(2_147_483_647, 5, { type: 'uint' });
-    number(2_147_483_648, 5, { type: 'uint' });
-    number(Number.MAX_SAFE_INTEGER, 8, { type: 'uint' });
+  test('(type = "Uint")', () => {
+    number(0, 1, { type: 'Uint' });
+    number(127, 1, { type: 'Uint' });
+    number(128, 2, { type: 'Uint' });
+    number(255, 2, { type: 'Uint' });
+    number(16_383, 2, { type: 'Uint' });
+    number(16_384, 3, { type: 'Uint' });
+    number(2_147_483_647, 5, { type: 'Uint' });
+    number(2_147_483_648, 5, { type: 'Uint' });
+    number(Number.MAX_SAFE_INTEGER, 8, { type: 'Uint' });
   });
 
-  test('(type = "uint8")', () => {
-    number(0, 1, { type: 'uint8' });
-    number(127, 1, { type: 'uint8' });
-    number(128, 1, { type: 'uint8' });
-    number(255, 1, { type: 'uint8' });
-    throws(() => number(16_383, 2, { type: 'uint8' }));
+  test('(type = "Uint8")', () => {
+    number(0, 1, { type: 'Uint8' });
+    number(127, 1, { type: 'Uint8' });
+    number(128, 1, { type: 'Uint8' });
+    number(255, 1, { type: 'Uint8' });
+    throws(() => number(16_383, 2, { type: 'Uint8' }));
   });
 });

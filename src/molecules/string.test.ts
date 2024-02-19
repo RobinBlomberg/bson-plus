@@ -32,15 +32,15 @@ describe('string', () => {
     string('Hello, Pierre Louÿs!', 22);
   });
 
-  test('(type = "string256")', () => {
-    string('Hello, Pierre Louÿs!', 21, { type: 'string256' });
+  test('(type = "String", length = 20)', () => {
+    string('Hello, Pierre Louÿs!', 21, { type: 'String', length: 20 });
   });
 
-  test('(type = "string256", length = 20)', () => {
-    string('Hello, Pierre Louÿs!', 20, { type: 'string256', length: 20 });
+  test('(type = "String256")', () => {
+    string('Hello, Pierre Louÿs!', 21, { type: 'String256' });
   });
 
-  test('(type = "string", length = 20)', () => {
-    string('Hello, Pierre Louÿs!', 21, { type: 'string', length: 20 });
+  test('(type = "String256", length = 20)', () => {
+    string('Hello, Pierre Louÿs!', 20, { type: 'String256', length: 20 });
   });
 });

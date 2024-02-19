@@ -5,7 +5,7 @@ import type { StringSchema } from './schemas.js';
 export const readString = (iterator: Iterator, schema?: StringSchema) => {
   const length = schema?.length ?? readSmallUint(iterator);
 
-  if (schema?.type === 'string256') {
+  if (schema?.type === 'String256') {
     const dataView = iterator[0];
     let value = '';
 
@@ -34,7 +34,7 @@ export const writeString = (
     writeBigUint(iterator, BigInt(value.length));
   }
 
-  if (schema?.type === 'string256') {
+  if (schema?.type === 'String256') {
     const dataView = iterator[0];
 
     for (const character of value) {
