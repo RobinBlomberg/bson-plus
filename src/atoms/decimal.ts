@@ -2,7 +2,6 @@ import type { Iterator } from './iterator.js';
 import { readBigUint, writeBigUint } from './uint.js';
 
 export const readDecimal = (iterator: Iterator) => {
-  // Read the sign and the length of the significand:
   const byte = iterator[0].getUint8(iterator[1]++);
   const sign = byte & 0b1000_0000;
   const significandLength = byte & 0b0111_1111;
@@ -10,7 +9,7 @@ export const readDecimal = (iterator: Iterator) => {
   // Read the integer representation of the value:
   const integer = readBigUint(iterator);
 
-  // Convert the integer representation to a floating-point number value:
+  // Convert the integer representation to a floating-point number:
   let absoluteValue;
   if (significandLength === 0) {
     absoluteValue = Number(integer);
@@ -20,15 +19,14 @@ export const readDecimal = (iterator: Iterator) => {
       +`${string.slice(0, -significandLength)}.${string.slice(-significandLength)}`;
   }
 
-  // Apply the sign to the value:
+  // Apply the sign:
   return sign === 0 ? absoluteValue : -absoluteValue;
 };
 
 export const writeDecimal = (iterator: Iterator, value: number) => {
-  // Get the sign bit:
   const sign = value < 0 ? 0b1000_0000 : 0;
 
-  // Remove the sign from the value:
+  // Remove the sign:
   if (sign !== 0) value = -value;
 
   const string = String(value);
@@ -36,13 +34,9 @@ export const writeDecimal = (iterator: Iterator, value: number) => {
   let concatenatedInteger: string;
   let significandLength = 0;
 
-  // Find the decimal point:
   for (let i = 1; i < stringLength; i++) {
     if (string[i] === '.') {
-      // Get the length of the significand:
       significandLength = stringLength - i - 1;
-
-      // Remove the decimal point from the value:
       concatenatedInteger = `${string.slice(0, i)}${string.slice(i + 1)}`;
       break;
     }

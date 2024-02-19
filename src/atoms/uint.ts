@@ -6,7 +6,6 @@ export const readBigUint = (iterator: Iterator) => {
   let value = 0n;
 
   while (true) {
-    // Read the byte:
     const byte = dataView.getUint8(iterator[1]++);
 
     // Make the least significant 7 bits of the byte the most significant bits of the value:
@@ -14,8 +13,6 @@ export const readBigUint = (iterator: Iterator) => {
 
     // If the current byte is not a continuation byte, return the value:
     if ((byte & 0b1000_0000) === 0) return value;
-
-    // Increase the shift by 7 bits:
     shift += 7n;
   }
 };
@@ -26,7 +23,6 @@ export const readSmallUint = (iterator: Iterator) => {
   let value = 0;
 
   while (true) {
-    // Read the byte:
     const byte = dataView.getUint8(iterator[1]++);
 
     // Make the least significant 7 bits of the byte the most significant bits of the value:
@@ -34,8 +30,6 @@ export const readSmallUint = (iterator: Iterator) => {
 
     // If the current byte is not a continuation byte, return the value:
     if ((byte & 0b1000_0000) === 0) return value;
-
-    // Increase the shift by 7 bits:
     shift += 7;
   }
 };
@@ -56,8 +50,6 @@ export const writeBigUint = (iterator: Iterator, value: bigint) => {
 
     // If there are remaining bits to write, mark the current byte as a continuation byte:
     if (value !== 0n) byte |= 0b1000_0000;
-
-    // Write the byte:
     dataView.setUint8(iterator[1]++, byte);
   } while (value !== 0n);
 };
@@ -74,8 +66,6 @@ export const writeSmallUint = (iterator: Iterator, value: number) => {
 
     // If there are remaining bits to write, mark the current byte as a continuation byte:
     if (value !== 0) byte |= 0b1000_0000;
-
-    // Write the byte:
     dataView.setUint8(iterator[1]++, byte);
   } while (value !== 0);
 };
