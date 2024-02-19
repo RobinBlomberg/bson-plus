@@ -4,8 +4,8 @@ import type { Iterator } from '../atoms/iterator.js';
 import { readUint, writeUint } from '../atoms/uint.js';
 import type { NumberSchema } from './schemas.js';
 
-export const readNumber = (iterator: Iterator, schema: NumberSchema = {}) => {
-  switch (schema.type) {
+export const readNumber = (iterator: Iterator, schema?: NumberSchema) => {
+  switch (schema?.type) {
     case 'float': {
       const value = iterator[0].getFloat64(iterator[1]);
       iterator[1] += 8;
@@ -27,9 +27,9 @@ export const readNumber = (iterator: Iterator, schema: NumberSchema = {}) => {
 export const writeNumber = (
   iterator: Iterator,
   value: number,
-  schema: NumberSchema = {},
+  schema?: NumberSchema,
 ) => {
-  switch (schema.type) {
+  switch (schema?.type) {
     case 'float': {
       iterator[0].setFloat64(iterator[1], value);
       iterator[1] += 8;

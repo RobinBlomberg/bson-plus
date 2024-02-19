@@ -8,8 +8,8 @@ const dataView = new DataView(new ArrayBuffer(32));
 
 const string = (
   input: string,
-  schema: StringSchema,
   expectedLength: number,
+  schema?: StringSchema,
 ) => {
   // Write:
   const iterator: Iterator = [dataView, 0];
@@ -29,18 +29,18 @@ const string = (
 
 describe('string', () => {
   test('()', () => {
-    string('Hello, Pierre Louÿs!', {}, 22);
+    string('Hello, Pierre Louÿs!', 22);
   });
 
-  test('(kind = "string256")', () => {
-    string('Hello, Pierre Louÿs!', { type: 'string256' }, 21);
+  test('(type = "string256")', () => {
+    string('Hello, Pierre Louÿs!', 21, { type: 'string256' });
   });
 
-  test('(kind = "string256", length = 20)', () => {
-    string('Hello, Pierre Louÿs!', { type: 'string256', length: 20 }, 20);
+  test('(type = "string256", length = 20)', () => {
+    string('Hello, Pierre Louÿs!', 20, { type: 'string256', length: 20 });
   });
 
-  test('(length = 20)', () => {
-    string('Hello, Pierre Louÿs!', { length: 20 }, 21);
+  test('(type = "string", length = 20)', () => {
+    string('Hello, Pierre Louÿs!', 21, { type: 'string', length: 20 });
   });
 });

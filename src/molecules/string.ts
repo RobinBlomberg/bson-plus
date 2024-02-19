@@ -2,10 +2,10 @@ import type { Iterator } from '../atoms/iterator.js';
 import { readSmallUint, writeBigUint, writeSmallUint } from '../atoms/uint.js';
 import type { StringSchema } from './schemas.js';
 
-export const readString = (iterator: Iterator, schema: StringSchema = {}) => {
-  const length = schema.length ?? readSmallUint(iterator);
+export const readString = (iterator: Iterator, schema?: StringSchema) => {
+  const length = schema?.length ?? readSmallUint(iterator);
 
-  if (schema.type === 'string256') {
+  if (schema?.type === 'string256') {
     const dataView = iterator[0];
     let value = '';
 
@@ -28,13 +28,13 @@ export const readString = (iterator: Iterator, schema: StringSchema = {}) => {
 export const writeString = (
   iterator: Iterator,
   value: string,
-  schema: StringSchema = {},
+  schema?: StringSchema,
 ) => {
-  if (schema.length === undefined) {
+  if (schema?.length === undefined) {
     writeBigUint(iterator, BigInt(value.length));
   }
 
-  if (schema.type === 'string256') {
+  if (schema?.type === 'string256') {
     const dataView = iterator[0];
 
     for (const character of value) {
