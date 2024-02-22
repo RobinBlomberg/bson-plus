@@ -1,6 +1,10 @@
-import { strictEqual, throws } from 'assert';
+import { deepStrictEqual, strictEqual, throws } from 'assert';
 import { describe, test } from 'vitest';
-import type { Processor, Processors } from './stream.js';
+import type {
+  Processor,
+  ProcessorTailParameters,
+  Processors,
+} from './stream.js';
 import { createStream } from './stream.js';
 
 describe('stream', () => {
@@ -10,24 +14,36 @@ describe('stream', () => {
 
   const fail = <Type extends keyof Processors>(
     type: Type,
-    input: Processors[Type] extends Processor<infer Input> ? Input : never,
+    input: Processors[Type] extends Processor<infer Input, any, any>
+      ? Input
+      : never,
+    ...args: ProcessorTailParameters<Processors[Type]>
   ) => {
     stream.setOffset(0);
-    throws(() => stream.write(type, input));
+    throws(() => stream.write(type, input as any, ...args));
   };
 
   const ok = <Type extends keyof Processors>(
     type: Type,
-    input: Processors[Type] extends Processor<infer Input> ? Input : never,
+    input: Processors[Type] extends Processor<infer Input, any, any>
+      ? Input
+      : never,
     expectedLength: number,
+    ...args: ProcessorTailParameters<Processors[Type]>
   ) => {
     stream.setOffset(0);
-    stream.write(type, input);
+    stream.write(type, input as any, ...args);
     const writeLength = stream.getOffset();
+
     stream.setOffset(0);
-    const output = stream.read(type);
+    const output = stream.read(type, ...args);
     const readLength = stream.getOffset();
-    strictEqual(Object.is(input, -0) ? 0 : input, output, 'unexpected output');
+
+    deepStrictEqual(
+      Object.is(input, -0) ? 0 : input,
+      output,
+      'unexpected output',
+    );
     strictEqual(writeLength, expectedLength, 'unexpected writeLength');
     strictEqual(readLength, expectedLength, 'unexpected readLength');
   };
@@ -62,6 +78,30 @@ describe('stream', () => {
     ok('biguint', 2_147_483_647n, 5);
     ok('biguint', 2_147_483_648n, 5);
     ok('biguint', BigInt(Number.MAX_SAFE_INTEGER), 8);
+  });
+
+  describe.skip('bitset', () => {
+    test('0 bytes', () => {
+      ok('bitset', [], 0, []);
+    });
+
+    test('1 byte', () => {
+      ok('bitset', [0], 1, [1]);
+      ok('bitset', [1, 1], 1, [1, 1]);
+      ok('bitset', [1, 1, 1, 1, 1, 1, 1, 1], 1, [1, 1, 1, 1, 1, 1, 1, 1]);
+      ok('bitset', [1, 0, 1, 0, 1, 0, 1, 0], 1, [1, 1, 1, 1, 1, 1, 1, 1]);
+      ok('bitset', [3], 1, [2]);
+      ok('bitset', [1, 3], 1, [1, 2]);
+      ok('bitset', [3, 1], 1, [2, 1]);
+      ok('bitset', [3, 3], 1, [2, 2]);
+      ok('bitset', [1, 15, 3, 1], 1, [1, 4, 2, 1]);
+      ok('bitset', [170], 1, [8]);
+      ok('bitset', [255], 1, [8]);
+    });
+
+    test('2 bytes (cross-byte values)', () => {
+      ok('bitset', [511], 2, [9]);
+    });
   });
 
   test('decimal', () => {
