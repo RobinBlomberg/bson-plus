@@ -80,6 +80,12 @@ describe('stream', () => {
     ok('biguint', BigInt(Number.MAX_SAFE_INTEGER), 8);
   });
 
+  test('biguintf', () => {
+    stream.setOffset(0);
+    dataView.setBigUint64(0, 0x3c_24_ad_14_ff_ff_ff_0fn);
+    console.log(buffer);
+  });
+
   describe.skip('bitset', () => {
     test('0 bytes', () => {
       ok('bitset', [], 0, []);

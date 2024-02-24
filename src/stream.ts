@@ -17,6 +17,7 @@ export type Processors = {
   bigint64: Processor<bigint>;
   biguint: Processor<bigint>;
   biguint64: Processor<bigint>;
+  biguintf: Processor<bigint>;
   bitset: Processor<number[], number[]>;
   decimal: Processor<bigint | number, undefined, number>;
   float32: Processor<number>;
@@ -114,6 +115,15 @@ export const createStream = (dataView: DataView, offset = 0) => {
       write: (value) => {
         dataView.setBigUint64(offset, value);
         offset += 8;
+      },
+    },
+    biguintf: {
+      read: () => {},
+      write: (value) => {
+        while (value !== 0n) {
+          dataView.setUint8(offset++, Number(value & 0b1111_1111n));
+          value >>= 8n;
+        }
       },
     },
     bitset: {
