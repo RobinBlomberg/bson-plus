@@ -52,6 +52,9 @@
     ],
     "rules": {
       "no-implicit-coercion": 0,
+      "no-restricted-syntax": 0,
+      "unicorn/empty-brace-spaces": 0,
+      "unicorn/no-empty-file": 0,
       "unicorn/no-new-array": 0
     }
   },
