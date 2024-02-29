@@ -4,12 +4,14 @@ import type { Codec, CodecIterator } from './index.js';
 import {
   bigint64Codec,
   biguint64Codec,
+  biguintvCodec,
   int16Codec,
   int32Codec,
   int8Codec,
   uint16Codec,
   uint32Codec,
   uint8Codec,
+  uintvCodec,
 } from './index.js';
 
 const buffer = new ArrayBuffer(32);
@@ -47,6 +49,20 @@ test('biguint64Codec', () => {
   assert(codec, 18_446_744_073_709_551_615n, 8);
   throws(() => assert(codec, -1n));
   throws(() => assert(codec, 18_446_744_073_709_551_616n));
+});
+
+test('biguintvCodec', () => {
+  const codec = biguintvCodec;
+  assert(codec, 0n, 1);
+  assert(codec, 127n, 1);
+  assert(codec, 128n, 2);
+  assert(codec, 123_456n, 3);
+  assert(codec, 12_345_678_901_234_567_890n, 10);
+  assert(codec, 123_456_789_012_345_678_901_234_567_890n, 14);
+
+  for (let i = 0; i < 500; i++) {
+    assert(codec, BigInt(Math.round(Math.random() * Number.MAX_SAFE_INTEGER)));
+  }
 });
 
 test('int8Codec', () => {
@@ -95,4 +111,16 @@ test('uint32Codec', () => {
   assert(codec, 4_294_967_295, 4);
   throws(() => assert(codec, -1));
   throws(() => assert(codec, 4_294_967_296));
+});
+
+test('uintvCodec', () => {
+  const codec = uintvCodec;
+  assert(codec, 0, 1);
+  assert(codec, 127, 1);
+  assert(codec, 128, 2);
+  assert(codec, 255, 2);
+  assert(codec, 16_383, 2);
+  assert(codec, 16_384, 3);
+  assert(codec, 2_147_483_647, 5);
+  throws(() => assert(codec, 2_147_483_648));
 });

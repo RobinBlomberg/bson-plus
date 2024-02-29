@@ -32,6 +32,29 @@ export const biguint64Codec: Codec<bigint> = {
   },
 };
 
+export const biguintvCodec: Codec<bigint> = {
+  read(iterator) {
+    const dataView = iterator.dataView;
+    let shift = 0n;
+    let value = 0n;
+    while (true) {
+      const byte = dataView.getUint8(iterator.offset++);
+      value |= BigInt(byte & 0b0111_1111) << shift;
+      if ((byte & 0b1000_0000) === 0) return value;
+      shift += 7n;
+    }
+  },
+  write(iterator, value) {
+    const dataView = iterator.dataView;
+    do {
+      let byte = Number(value & 0b0111_1111n);
+      value >>= 7n;
+      if (value !== 0n) byte |= 0b1000_0000;
+      dataView.setUint8(iterator.offset++, byte);
+    } while (value !== 0n);
+  },
+};
+
 export const int8Codec: Codec<number> = {
   read(iterator) {
     return iterator.dataView.getInt8(iterator.offset++);
@@ -95,5 +118,28 @@ export const uint32Codec: Codec<number> = {
   write(iterator, value) {
     iterator.dataView.setUint32(iterator.offset, value);
     iterator.offset += 4;
+  },
+};
+
+export const uintvCodec: Codec<number> = {
+  read(iterator) {
+    const dataView = iterator.dataView;
+    let shift = 0;
+    let value = 0;
+    while (true) {
+      const byte = dataView.getUint8(iterator.offset++);
+      value |= (byte & 0b0111_1111) << shift;
+      if ((byte & 0b1000_0000) === 0) return value;
+      shift += 7;
+    }
+  },
+  write(iterator, value) {
+    const dataView = iterator.dataView;
+    do {
+      let byte = value & 0b0111_1111;
+      value >>= 7;
+      if (value !== 0) byte |= 0b1000_0000;
+      dataView.setUint8(iterator.offset++, byte);
+    } while (value !== 0);
   },
 };
