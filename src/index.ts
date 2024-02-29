@@ -93,6 +93,30 @@ export const decimalCodec: Codec<number> = {
   },
 };
 
+export const float32Codec: Codec<number> = {
+  read(iterator) {
+    const value = iterator.dataView.getFloat32(iterator.offset);
+    iterator.offset += 4;
+    return value;
+  },
+  write(iterator, value) {
+    iterator.dataView.setFloat32(iterator.offset, value);
+    iterator.offset += 4;
+  },
+};
+
+export const float64Codec: Codec<number> = {
+  read(iterator) {
+    const value = iterator.dataView.getFloat64(iterator.offset);
+    iterator.offset += 8;
+    return value;
+  },
+  write(iterator, value) {
+    iterator.dataView.setFloat64(iterator.offset, value);
+    iterator.offset += 8;
+  },
+};
+
 export const int8Codec: Codec<number> = {
   read(iterator) {
     return iterator.dataView.getInt8(iterator.offset++);

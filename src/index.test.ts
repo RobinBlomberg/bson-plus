@@ -6,6 +6,8 @@ import {
   biguint64Codec,
   biguintvCodec,
   decimalCodec,
+  float32Codec,
+  float64Codec,
   int16Codec,
   int32Codec,
   int8Codec,
@@ -78,6 +80,18 @@ test('decimalCodec', () => {
   for (let i = 0; i < 500; i++) {
     assert(codec, Math.random() * 1_000_000);
   }
+});
+
+test('float32Codec', () => {
+  const codec = float32Codec;
+  assert(codec, -3.402_823_466_385_288_6e38, 4);
+  assert(codec, 3.402_823_466_385_288_6e38, 4);
+});
+
+test('float64Codec', () => {
+  const codec = float64Codec;
+  assert(codec, -1.797_693_134_862_315_7e308, 8);
+  assert(codec, 1.797_693_134_862_315_7e308, 8);
 });
 
 test('int8Codec', () => {
