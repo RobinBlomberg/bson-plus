@@ -20,6 +20,36 @@ export const bigint64Codec: Codec<bigint> = {
   },
 };
 
+export const bigintvCodec: Codec<bigint> = {
+  read(iterator) {
+    const dataView = iterator.dataView;
+    let byte = dataView.getUint8(iterator.offset++);
+    const sign = byte & 0b0100_0000;
+    let value = BigInt(byte) & 0b0011_1111n;
+    let shift = 6n;
+    while ((byte & 0b1000_0000) !== 0) {
+      byte = dataView.getUint8(iterator.offset++);
+      value |= (BigInt(byte) & 0b0111_1111n) << shift;
+      shift += 7n;
+    }
+    return sign === 0 ? value : -value;
+  },
+  write(iterator, value) {
+    const dataView = iterator.dataView;
+    const sign = value < 0 ? 0b0100_0000 : 0;
+    if (sign !== 0) value = -value;
+    let byte = Number(value & 0b0011_1111n) | sign;
+    value >>= 6n;
+    while (true) {
+      if (value !== 0n) byte |= 0b1000_0000;
+      dataView.setUint8(iterator.offset++, byte);
+      if (value === 0n) return;
+      byte = Number(value & 0b0111_1111n);
+      value >>= 7n;
+    }
+  },
+};
+
 export const biguint64Codec: Codec<bigint> = {
   read(iterator) {
     const value = iterator.dataView.getBigUint64(iterator.offset);

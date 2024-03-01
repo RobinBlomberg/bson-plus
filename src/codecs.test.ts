@@ -1,8 +1,9 @@
 import { strictEqual, throws } from 'assert';
 import { test } from 'vitest';
-import type { Codec, CodecIterator } from './index.js';
+import type { Codec, CodecIterator } from './codecs.js';
 import {
   bigint64Codec,
+  bigintvCodec,
   biguint64Codec,
   biguintvCodec,
   decimalCodec,
@@ -15,7 +16,7 @@ import {
   uint32Codec,
   uint8Codec,
   uintvCodec,
-} from './index.js';
+} from './codecs.js';
 
 const buffer = new ArrayBuffer(32);
 const dataView = new DataView(buffer);
@@ -52,6 +53,26 @@ test('biguint64Codec', () => {
   assert(codec, 18_446_744_073_709_551_615n, 8);
   throws(() => assert(codec, -1n));
   throws(() => assert(codec, 18_446_744_073_709_551_616n));
+});
+
+test('bigintvCodec', () => {
+  const codec = bigintvCodec;
+  assert(codec, -0n, 1);
+  assert(codec, -63n, 1);
+  assert(codec, -64n, 2);
+  assert(codec, -123_456n, 3);
+  assert(codec, -12_345_678_901_234_567_890n, 10);
+  assert(codec, -123_456_789_012_345_678_901_234_567_890n, 14);
+  assert(codec, 0n, 1);
+  assert(codec, 63n, 1);
+  assert(codec, 64n, 2);
+  assert(codec, 123_456n, 3);
+  assert(codec, 12_345_678_901_234_567_890n, 10);
+  assert(codec, 123_456_789_012_345_678_901_234_567_890n, 14);
+
+  for (let i = 0; i < 500; i++) {
+    assert(codec, BigInt(Math.round(Math.random() * Number.MAX_SAFE_INTEGER)));
+  }
 });
 
 test('biguintvCodec', () => {
